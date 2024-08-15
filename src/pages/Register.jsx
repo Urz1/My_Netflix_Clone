@@ -1,38 +1,43 @@
 import React, { useRef, useState } from "react";
 import logo from "../assets/images/Netflix-logo.png";
 import bgImage from "../assets/images/Postter.jpeg";
+import { useForm } from "react-hook-form";
 
 const Register = () => {
-  const [isEmail, setIsEmail] = useState("");
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailSetted, setEmailSetted] = useState(false); // Manage with useState
   const passwordRef = useRef();
-  
-  const handleChange = (event) => {
-    setIsEmail(event.target.value);
-  };
 
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
 
-  const handleEmailSubmit = () => {
-    if (isEmail) {
-      passwordRef.current.focus();
-    } else {
-      alert("Please enter a valid email address.");
-    }
+  const onSubmit = (values)  => {
+    setEmail(values)
+    // alert(JSON.stringify(values, null, 2))  
+    setEmailSetted(true);
   };
 
-  const handleFinish = () => {
-    alert(`Email: ${isEmail}, Password: ${password}`);
-    // You can add logic here to handle form submission.
+  const handleFinish = (event) => {
+    event.preventDefault();
+    alert(`Email: ${email}, Password: ${password}`);
   };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm();
 
   return (
     <div
       className="text-white w-full h-full absolute flex flex-col justify-between"
-      style={{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+      style={{
+        backgroundImage: `url(${bgImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
       <div className="flex flex-row justify-between p-4">
         <img src={logo} className="w-1/6" alt="Netflix Logo" />
@@ -50,22 +55,25 @@ const Register = () => {
           Ready to start? Enter your email to create or restart your membership.
         </p>
 
-        {!isEmail ? (
-          <div className="flex mt-6">
+        {!emailSetted ? (
+          <form onSubmit={handleSubmit(onSubmit)}>
             <input
-              // value={isEmail}
-              onChange={handleChange}
               type="email"
-              placeholder="Email Address"
               className="p-4 text-black rounded-l"
+              placeholder="Email Address"
+              {...register("email", {
+                required: true,
+                pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+              })}
             />
+            {/* {errors.email && <span>Invalid email</span>} */}
+
             <button
-              onClick={handleEmailSubmit}
+              type="submit"
               className="bg-red-600 text-white rounded-r p-4 font-bold"
-            >
-              Get Started
+            >Get Started 
             </button>
-          </div>
+          </form>
         ) : (
           <form className="flex mt-6" onSubmit={handleFinish}>
             <input
@@ -80,7 +88,7 @@ const Register = () => {
               type="submit"
               className="bg-red-600 text-white rounded-r p-4 font-bold"
             >
-              Finish
+              Start
             </button>
           </form>
         )}
