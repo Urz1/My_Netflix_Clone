@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const UserSchema = mongoose.Schema(
+const listSchema = mongoose.Schema(
   {
     title: { type: String, required: true, unique: true },
     type: { type: String },
@@ -10,4 +10,4 @@ const UserSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User",UserSchema)
+export default mongoose.model("list",listSchema)

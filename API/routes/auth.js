@@ -1,24 +1,23 @@
 import { Router } from "express";
-import CryptoJS from "crypto-js";
+import bcrypt from "bcrypt";
 import User from "../models/user.js";
-
+import jwt from "jsonwebtoken";
 const router = Router();
 
 router.post("/register", async (req, res) => {
-  try {
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      req.body.password,
-      process.env.PASSWORD_SECRET
-    ).toString();
+  console.log("hi there ");
 
+  try {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
-      password: encryptedPassword,
+      password: hashedPassword,
     });
-
     const savedUser = await newUser.save();
-    res.status(201).json(savedUser);
+    const { password, ...otherDetails } = savedUser._doc;
+    res.status(200).json({ ...otherDetails });
   } catch (error) {
     console.error("Error during registration:", error);
     res.status(500).json({ message: error.message });
@@ -28,20 +27,26 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
-    if (!user) {
-      return res.status(400).json({ message: "Wrong email or password" });
-    }
 
-    const bytes = CryptoJS.AES.decrypt(
-      user.password,
-      process.env.PASSWORD_SECRET
+    !user && res.status(401).json("Wrong password or username!");
+
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      user.password
     );
-    const decryptedPassword = bytes.toString(CryptoJS.enc.Utf8);
-
-    if (decryptedPassword !== req.body.password) {
+    if (!validPassword) {
       return res.status(400).json({ message: "Wrong password credentials" });
     }
-    res.status(200).json(user);
+
+    const accessToken = jwt.sign(
+      { id: user._id, isAdmin: user.isAdmin },
+      process.env.PASSWORD_SECRET,
+      { expiresIn: "5d" }
+    );
+
+    const { password, ...info } = user._doc;
+    res.status(200).json({ ...info, accessToken });
+
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: error.message });

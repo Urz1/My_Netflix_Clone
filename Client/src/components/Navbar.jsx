@@ -2,6 +2,7 @@ import { ArrowDropDown, Notifications, Search } from "@mui/icons-material";
 import React, { useState,useEffect } from "react";
 import Profile from "../assets/images/Profile.png";
 import Netfix from "../assets/images/Netflix-logo.png";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,11 +28,12 @@ const Navbar = () => {
       <div className="p-4 flex flex-row justify-between items-center">
         <div className="flex flex-row items-center text-blue-100 space-x-6 text-xl font-bold">
           <img className="w-1/6 max-w-xs" src={Netfix} alt="Netflix logo" />
-          <span>HomePage</span>
-          <span>Series</span>
-          <span>Movies</span>
-          <span>New & Popular</span>
-          <span>My List</span>
+          <Link to={"/"}><span>HomePage</span></Link>
+          
+          <Link to={"/series"}><span>Series</span></Link>
+          <Link to={"/movies"}><span>Movies</span></Link>
+          <Link to={"/"}><span>New & and Popular</span></Link>
+          <Link to={"/"}><span>My List</span></Link>
         </div>
         <div className="text-white flex flex-row items-center space-x-4">
           <Search />

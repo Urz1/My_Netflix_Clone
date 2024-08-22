@@ -41,7 +41,7 @@ const Register = () => {
     >
       <div className="flex flex-row justify-between p-4">
         <img src={logo} className="w-1/6" alt="Netflix Logo" />
-        <button className="bg-red-600 text-white rounded p-3 h-fit">
+        <button className="bg-red-600 text-white rounded p-3 w-fit h-fit">
           Sign Up
         </button>
       </div>
