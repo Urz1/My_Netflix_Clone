@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import mImage from "../assets/images/pxfuel.jpg";
 import vid from "../assets/video/Trailer.mp4";
 import {
@@ -8,9 +8,31 @@ import {
   ThumbDownAltOutlined,
   ThumbUpAltOutlined,
 } from "@mui/icons-material";
+import axios from "axios";
 
-const ListItem = () => {
+
+const ListItem = ({ item }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [movie, setMovie] = useState([]);
+  console.log(item);
+  useEffect(() => {
+    const getMovie = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/movie/find/${item}`,
+          {
+            headers: {
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2YzZkY2U2NDk5ZDI3OTQ1YmI2NDRmNCIsImlzQWRtaW4iOnRydWUsImlhdCI6MTcyNDMyOTI0MiwiZXhwIjoxNzI0NzYxMjQyfQ.jIRhvZmv-VF9_fF0shX_tgyA8c3oritfF0y2HV-EQ_o`,
+            },
+          }
+        );
+        setMovie(response.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getMovie();
+  }, [item]);
 
   return (
     <div
@@ -21,7 +43,7 @@ const ListItem = () => {
       {isHovered && (
         <>
           <video
-            src={vid}
+            src={movie.trailer}
             autoPlay
             loop
             className="absolute inset-0 object-cover w-full h-full z-0"
@@ -29,23 +51,42 @@ const ListItem = () => {
           ></video>
           <div className="flex flex-col absolute bottom-0 left-0 p-4 bg-black bg-opacity-40 text-white z-10">
             <div className="flex gap-4 mb-2">
-              <PlayArrow className="cursor-pointer hover:text-gray-300" aria-label="Play" role="button" />
-              <Add className="cursor-pointer hover:text-gray-300" aria-label="Add" role="button" />
-              <ThumbUpAltOutlined className="cursor-pointer hover:text-gray-300" aria-label="Like" role="button" />
-              <ThumbDownAltOutlined className="cursor-pointer hover:text-gray-300" aria-label="Dislike" role="button" />
-              <FavoriteBorderOutlined className="cursor-pointer hover:text-gray-300" aria-label="Favorite" role="button" />
+              <PlayArrow
+                className="cursor-pointer hover:text-gray-300"
+                aria-label="Play"
+                role="button"
+              />
+              <Add
+                className="cursor-pointer hover:text-gray-300"
+                aria-label="Add"
+                role="button"
+              />
+              <ThumbUpAltOutlined
+                className="cursor-pointer hover:text-gray-300"
+                aria-label="Like"
+                role="button"
+              />
+              <ThumbDownAltOutlined
+                className="cursor-pointer hover:text-gray-300"
+                aria-label="Dislike"
+                role="button"
+              />
+              <FavoriteBorderOutlined
+                className="cursor-pointer hover:text-gray-300"
+                aria-label="Favorite"
+                role="button"
+              />
             </div>
-            <p className="text-sm leading-relaxed">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed,
-              adipisci in! Dolorum dicta voluptates, alias molestias autem
-              soluta, eveniet nisi nemo velit distinctio, architecto fuga minima
-              dolores odit quo deleniti.
-            </p>
+            <p className="text-sm leading-relaxed">{movie.description}</p>
           </div>
         </>
       )}
       {!isHovered && (
-        <img className="absolute inset-0 w-full h-full object-cover" src={mImage} alt="Thumbnail" />
+        <img
+          className="absolute inset-0 w-full h-full object-cover"
+          src={movie.img}
+          alt="Thumbnail"
+        />
       )}
     </div>
   );

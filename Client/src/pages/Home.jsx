@@ -40,7 +40,7 @@ const Home = ({ type }) => {
       {data.map((list)=>{
         console.log(list);
         
-          <List list={list}/>
+          return <List lists={list}/>
         })}
         
         {/* <List />
